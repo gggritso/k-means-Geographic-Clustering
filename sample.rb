@@ -1,3 +1,5 @@
+$: << File.dirname(__FILE__)
+
 require 'rubygems'
 require 'mongo'
 require 'lib/kmeans'
@@ -7,23 +9,27 @@ def random_coordinate(range)
   rand * (max - min) + min
 end
 
-# Insert 100 randomly-generated locations into a MongoDB database
 db = Mongo::Connection.new('localhost').db('clustering')
 coll = db['points']
 
-for i in 1..100
-  # Generate a point located roughly in downtown Toronto
-  longitude_range = [-79.45, -79.30]
-  latitude_range = [43.65, 43.70]
+# Insert 100 randomly-generated locations into a MongoDB database
+if not coll.find.count > 0
 
-  lon = random_coordinate(longitude_range)
-  lat = random_coordinate(latitude_range)
+  for i in 1..100
+    # Generate a point located roughly in downtown Toronto
+    longitude_range = [-79.45, -79.30]
+    latitude_range = [43.65, 43.70]
 
-  doc = {'coordinates' => [lon,lat]}
-  coll.insert(doc, :safe => true)
+    lon = random_coordinate(longitude_range)
+    lat = random_coordinate(latitude_range)
+
+    doc = {'coordinates' => [lon,lat]}
+    coll.insert(doc, :safe => true)
+  end
+
+  puts 'Inserted points into database.'
+
 end
-
-puts 'Inserted point into database.'
 
 # Create the index for querying
 coll.ensure_index([['coordinates', Mongo::GEO2D]])
@@ -32,8 +38,10 @@ puts 'Ensured 2D index for coordinate points.'
 # Cluster one level using k-means
 points = []
 coll.find().each do |point|
-  points << point['coordinates']
+  node = Kmeans::Node.new(point['coordinates'])
+  points << node
 end
 
-clusters = Kmeans(points, 10)
+clusters = Kmeans::cluster(points, 10)
 p clusters
+puts "#{clusters.length} clusters created successfully."
