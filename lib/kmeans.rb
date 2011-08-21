@@ -1,40 +1,69 @@
-class Kmeans
-  include Geometric
+module Kmeans
+  # TODO: Error and validity checks for objects
 
-  def initialize(points, cluster_count)
-    # TODO: Set defaults
-    @points = points
-    @cluster_count cluster_count
-  end
+  include Geometric
 
   def cluster(points, n)
     initial_seeds = points.sample(n) # Ruby 1.9 required
-    initial_seeds.map {|n| Node(n)}
+    clusters = initial_seed.clone
 
     loop do
-      clusters = []
+      lists = [] * n
+
+      points.each do |point|
+        smallest_distance = haversine_distance(point, clusters[0].centroid)
+        index = 0
+        clusters.each do |cluster|
+          distance = haversine_distance(point, cluster.centroid)
+          if distance < smallest_distance
+            smallest_distance = distance
+            index = something # loop's index + 1
+          end
+          lists[index] << point
+
+        biggest_shift = 0.0
+        clusters.each do |cluster|
+          shift = clusters # how much did the centroid move?
+        if biggest_shift < cutoff
+          break
+        end
+
+      return clusters
   
     end
 
   end
 
-end
+  class Node
 
-class Node
+    attr_accessor :coordinates
 
-end
-
-class Cluster
-
-  attr_accessor :nodes :centroid
-
-  def update(nodes)
-    @nodes = nodes
-    @centroid = calculate_centroid()
   end
 
-  def calculate_centroid()
-    
+  class Cluster
+
+    attr_accessor :nodes :centroid
+
+    def update(nodes)
+      @nodes = nodes
+      old_centroid = @centroid
+      @centroid = calculate_centroid()
+      haversine_distance(old_centroid, new_centroid)
+    end
+
+    def calculate_centroid()
+      total_lat, total_lon = 0, 0
+
+      @nodes.each do |node|
+        total_lat += node.latitude
+        total_lon += node.longitude
+      end
+
+      n = @nodes.length
+      Node(total_lat/n, total_lon/n)
+
+    end
+
   end
 
 end
