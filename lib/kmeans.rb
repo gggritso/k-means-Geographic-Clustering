@@ -1,7 +1,4 @@
-$: << File.dirname(__FILE__)
-
-require 'geometric'
-include Geometric
+require_relative 'geometric'
 
 module Kmeans
   # TODO: Error and validity checks for objects
@@ -60,7 +57,7 @@ module Kmeans
   end
 
 
-  def self.cluster(points, n)
+  def Kmeans.cluster(points, n)
     initial_seeds = points.sample(n) # Ruby 1.9 required
     # Create a one-point Cluster for each seed
     clusters = []

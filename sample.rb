@@ -1,8 +1,10 @@
-$: << File.dirname(__FILE__)
-
 require 'rubygems'
 require 'mongo'
-require 'lib/kmeans'
+
+require_relative 'lib/kmeans'
+require_relative 'lib/geometric'
+
+include Geometric
 
 def random_coordinate(range)
   min, max = range
